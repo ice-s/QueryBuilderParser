@@ -1,21 +1,19 @@
 {
-    "name": "timgws/query-builder-parser",
-    "homepage": "http://github.com/timgws/QueryBuilderParser",
+    "name": "ice-s/query-builder-parser",
+    "homepage": "https://github.com/ice-s/QueryBuilderParser",
+    "version": "1.5.5",
     "description": "Build complex Eloquent & QueryBuilder queries automatically when using jQuery-QueryBuilder",
-    "keywords": [ "ajax", "eloquent", "jquery", "laravel", "parser", "query builder", "sql", "mongodb" ],
     "type": "library",
     "license": "MIT",
     "authors": [
         {
-            "name": "Tim Groeneveld",
-            "email": "tim@timg.ws",
-            "homepage": "http://timg.ws"
+            "name": "Son",
+            "email": "nguyentruongson93@gmail.com"
         }
     ],
     "autoload": {
         "psr-4": {
-          "timgws\\": "src/QueryBuilderParser/",
-          "timgws\\test\\": "tests/"
+          "Ices\\QueryBuilderParser\\": "src/QueryBuilderParser/"
         }
 
     },

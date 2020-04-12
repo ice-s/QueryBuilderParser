@@ -4,7 +4,6 @@ namespace timgws;
 
 use \Carbon\Carbon;
 use \stdClass;
-use \Illuminate\Database\Query\Builder;
 use \timgws\QBParseException;
 
 class QueryBuilderParser
@@ -21,19 +20,7 @@ class QueryBuilderParser
         $this->fields = $fields;
     }
 
-    /**
-     * QueryBuilderParser's parse function!
-     *
-     * Build a query based on JSON that has been passed into the function, onto the builder passed into the function.
-     *
-     * @param $json
-     * @param Builder $querybuilder
-     *
-     * @throws QBParseException
-     *
-     * @return Builder
-     */
-    public function parse($json, Builder $querybuilder)
+    public function parse($json, $querybuilder)
     {
         // do a JSON decode (throws exceptions if there is a JSON error...)
         $query = $this->decodeJSON($json);
@@ -51,18 +38,7 @@ class QueryBuilderParser
         return $this->loopThroughRules($query->rules, $querybuilder, $query->condition);
     }
 
-    /**
-     * Called by parse, loops through all the rules to find out if nested or not.
-     *
-     * @param array $rules
-     * @param Builder $querybuilder
-     * @param string $queryCondition
-     *
-     * @throws QBParseException
-     *
-     * @return Builder
-     */
-    protected function loopThroughRules(array $rules, Builder $querybuilder, $queryCondition = 'AND')
+    protected function loopThroughRules(array $rules, $querybuilder, $queryCondition = 'AND')
     {
         foreach ($rules as $rule) {
             /*
@@ -94,17 +70,7 @@ class QueryBuilderParser
         return false;
     }
 
-    /**
-     * Create nested queries
-     *
-     * When a rule is actually a group of rules, we want to build a nested query with the specified condition (AND/OR)
-     *
-     * @param Builder $querybuilder
-     * @param stdClass $rule
-     * @param string|null $condition
-     * @return Builder
-     */
-    protected function createNestedQuery(Builder $querybuilder, stdClass $rule, $condition = null)
+    protected function createNestedQuery($querybuilder, stdClass $rule, $condition = null)
     {
         if ($condition === null) {
             $condition = $rule->condition;
@@ -126,15 +92,6 @@ class QueryBuilderParser
         }, $condition);
     }
 
-    /**
-     * Check if a given rule is correct.
-     *
-     * Just before making a query for a rule, we want to make sure that the field, operator and value are set
-     *
-     * @param stdClass $rule
-     *
-     * @return bool true if values are correct.
-     */
     protected function checkRuleCorrect(stdClass $rule)
     {
         if (!isset($rule->operator, $rule->id, $rule->field, $rule->type)) {
@@ -148,13 +105,6 @@ class QueryBuilderParser
         return true;
     }
 
-    /**
-     * Give back the correct value when we don't accept one.
-     *
-     * @param $rule
-     *
-     * @return null|string
-     */
     protected function operatorValueWhenNotAcceptingOne(stdClass $rule)
     {
         if ($rule->operator == 'is_empty' || $rule->operator == 'is_not_empty') {
@@ -164,19 +114,6 @@ class QueryBuilderParser
         return null;
     }
 
-    /**
-     * Ensure that the value for a field is correct.
-     *
-     * Append/Prepend values for SQL statements, etc.
-     *
-     * @param $operator
-     * @param stdClass $rule
-     * @param $value
-     *
-     * @throws QBParseException
-     *
-     * @return string
-     */
     protected function getCorrectValue($operator, stdClass $rule, $value)
     {
         $field = $rule->field;
@@ -195,23 +132,7 @@ class QueryBuilderParser
         return $this->appendOperatorIfRequired($requireArray, $value, $sqlOperator);
     }
 
-    /**
-     * makeQuery: The money maker!
-     *
-     * Take a particular rule and make build something that the QueryBuilder would be proud of.
-     *
-     * Make sure that all the correct fields are in the rule object then add the expression to
-     * the query that was given by the user to the QueryBuilder.
-     *
-     * @param Builder $query
-     * @param stdClass $rule
-     * @param string $queryCondition and/or...
-     *
-     * @throws QBParseException
-     *
-     * @return Builder
-     */
-    protected function makeQuery(Builder $query, stdClass $rule, $queryCondition = 'AND')
+    protected function makeQuery($query, stdClass $rule, $queryCondition = 'AND')
     {
         /*
          * Ensure that the value is correct for the rule, return query on exception
@@ -225,19 +146,7 @@ class QueryBuilderParser
         return $this->convertIncomingQBtoQuery($query, $rule, $value, $queryCondition);
     }
 
-    /**
-     * Convert an incomming rule from jQuery QueryBuilder to the Eloquent Querybuilder
-     *
-     * (This used to be part of makeQuery, where the name made sense, but I pulled it
-     * out to reduce some duplicated code inside JoinSupportingQueryBuilder)
-     *
-     * @param Builder $query
-     * @param stdClass $rule
-     * @param mixed $value the value that needs to be queried in the database.
-     * @param string $queryCondition and/or...
-     * @return Builder
-     */
-    protected function convertIncomingQBtoQuery(Builder $query, stdClass $rule, $value, $queryCondition = 'AND')
+    protected function convertIncomingQBtoQuery($query, stdClass $rule, $value, $queryCondition = 'AND')
     {
         /*
          * Convert the Operator (LIKE/NOT LIKE/GREATER THAN) given to us by QueryBuilder
