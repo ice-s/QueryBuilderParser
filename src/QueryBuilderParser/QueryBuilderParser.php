@@ -1,10 +1,10 @@
 <?php
 
-namespace timgws;
+namespace Ices\QueryBuilderParser;
 
 use \Carbon\Carbon;
 use \stdClass;
-use \timgws\QBParseException;
+use \Ices\QueryBuilderParser\QBParseException;
 
 class QueryBuilderParser
 {

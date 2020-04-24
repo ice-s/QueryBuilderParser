@@ -1,5 +1,5 @@
 <?php
-namespace timgws;
+namespace Ices\QueryBuilderParser;
 
 use \Illuminate\Database\Query\Builder;
 use \stdClass;
@@ -270,7 +270,7 @@ trait QBPFunctions
      *
      * @return Builder
      */
-    protected function makeQueryWhenArray(Builder $query, stdClass $rule, array $sqlOperator, array $value, $condition)
+    protected function makeQueryWhenArray($query, stdClass $rule, array $sqlOperator, array $value, $condition)
     {
         if ($sqlOperator['operator'] == 'IN' || $sqlOperator['operator'] == 'NOT IN') {
             return $this->makeArrayQueryIn($query, $rule, $sqlOperator['operator'], $value, $condition);
@@ -284,7 +284,7 @@ trait QBPFunctions
     /**
      * Create a 'null' query when required.
      *
-     * @param Builder  $query
+     * @param $query
      * @param stdClass $rule
      * @param array    $sqlOperator
      * @param string   $condition
@@ -292,7 +292,7 @@ trait QBPFunctions
      * @throws QBParseException when SQL operator is !null
      * @return Builder
      */
-    protected function makeQueryWhenNull(Builder $query, stdClass $rule, array $sqlOperator, $condition)
+    protected function makeQueryWhenNull($query, stdClass $rule, array $sqlOperator, $condition)
     {
         if ($sqlOperator['operator'] == 'NULL') {
             return $query->whereNull($rule->field, $condition);
@@ -307,14 +307,14 @@ trait QBPFunctions
      * makeArrayQueryIn, when the query is an IN or NOT IN...
      *
      * @see makeQueryWhenArray
-     * @param Builder $query
+     * @param $query
      * @param stdClass $rule
      * @param string $operator
      * @param array $value
      * @param string $condition
      * @return Builder
      */
-    private function makeArrayQueryIn(Builder $query, stdClass $rule, $operator, array $value, $condition)
+    private function makeArrayQueryIn($query, stdClass $rule, $operator, array $value, $condition)
     {
         if ($operator == 'NOT IN') {
             return $query->whereNotIn($rule->field, $value, $condition);
@@ -328,7 +328,7 @@ trait QBPFunctions
      * makeArrayQueryBetween, when the query is a BETWEEN or NOT BETWEEN...
      *
      * @see makeQueryWhenArray
-     * @param Builder $query
+     * @param $query
      * @param stdClass $rule
      * @param string operator the SQL operator used. [BETWEEN|NOT BETWEEN]
      * @param array $value
@@ -336,7 +336,7 @@ trait QBPFunctions
      * @throws QBParseException when more then two items given for the between
      * @return Builder
      */
-    private function makeArrayQueryBetween(Builder $query, stdClass $rule, $operator, array $value, $condition)
+    private function makeArrayQueryBetween($query, stdClass $rule, $operator, array $value, $condition)
     {
         if (count($value) !== 2) {
             throw new QBParseException("{$rule->field} should be an array with only two items.");

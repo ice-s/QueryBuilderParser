@@ -1,10 +1,10 @@
 <?php
 
-namespace timgws;
+namespace Ices\QueryBuilderParser;
 
 use Illuminate\Database\Query\Builder;
 use stdClass;
-use timgws\QBParseException;
+use Ices\QueryBuilderParser\QBParseException;
 
 class JoinSupportingQueryBuilderParser extends QueryBuilderParser
 {

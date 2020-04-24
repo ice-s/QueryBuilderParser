@@ -1,6 +1,6 @@
 <?php
 
-namespace timgws;
+namespace Ices\QueryBuilderParser;
 
 class QBRuleException extends \Exception
 {
