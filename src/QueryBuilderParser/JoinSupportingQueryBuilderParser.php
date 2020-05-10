@@ -34,23 +34,7 @@ class JoinSupportingQueryBuilderParser extends QueryBuilderParser
         $this->joinFields = $joinFields;
     }
 
-    /**
-     * makeQuery: The money maker!
-     *
-     * Take a particular rule and make build something that the QueryBuilder would be proud of.
-     *
-     * Make sure that all the correct fields are in the rule object then add the expression to
-     * the query that was given by the user to the QueryBuilder.
-     *
-     * @param Builder  $query
-     * @param stdClass $rule
-     * @param string   $queryCondition the condition that will be used in the query
-     *
-     * @throws QBParseException
-     *
-     * @return Builder
-     */
-    protected function makeQuery(Builder $query, stdClass $rule, $queryCondition = 'AND')
+    protected function makeQuery($query, stdClass $rule, $queryCondition = 'AND')
     {
         /*
          * Ensure that the value is correct for the rule, return query on exception
@@ -70,14 +54,6 @@ class JoinSupportingQueryBuilderParser extends QueryBuilderParser
         return $this->convertIncomingQBtoQuery($query, $rule, $value, $condition);
     }
 
-    /**
-     * Build a subquery clause if there are join fields that have been specified.
-     *
-     * @param Builder $query
-     * @param stdClass $rule
-     * @param string|null $value
-     * @return Builder the query builder object
-     */
     private function buildSubclauseQuery($query, $rule, $value, $condition)
     {
         /*
@@ -97,10 +73,7 @@ class JoinSupportingQueryBuilderParser extends QueryBuilderParser
 
         // Create a where exists clause to join to the other table, and find results matching the criteria
         $query = $query->whereExists(
-            /**
-             * @param Builder $query
-             */
-            function(Builder $query) use ($subclause) {
+            function($query) use ($subclause) {
 
                 $q = $query->selectRaw(1)
                     ->from($subclause['to_table'])
@@ -121,15 +94,7 @@ class JoinSupportingQueryBuilderParser extends QueryBuilderParser
         return $query;
     }
 
-    /**
-     * The inner query for a subclause
-     *
-     * @see buildSubclauseQuery
-     * @param array $subclause
-     * @param Builder $query
-     * @return Builder the query builder object
-     */
-    private function buildSubclauseInnerQuery($subclause, Builder $query)
+    private function buildSubclauseInnerQuery($subclause, $query)
     {
         if ($subclause['require_array']) {
             return $this->buildRequireArrayQuery($subclause, $query);
@@ -142,16 +107,7 @@ class JoinSupportingQueryBuilderParser extends QueryBuilderParser
         return $this->buildRequireNotArrayQuery($subclause, $query);
     }
 
-    /**
-     * The inner query for a subclause when an array is required
-     *
-     * @see buildSubclauseInnerQuery
-     * @throws QBParseException when an invalid array is passed.
-     * @param array $subclause
-     * @param Builder $query
-     * @return Builder the query builder object
-     */
-    private function buildRequireArrayQuery($subclause, Builder $query)
+    private function buildRequireArrayQuery($subclause, $query)
     {
         if ($subclause['operator'] == 'IN') {
             $query->whereIn($subclause['to_value_column'], $subclause['value']);
@@ -176,28 +132,12 @@ class JoinSupportingQueryBuilderParser extends QueryBuilderParser
         return $query;
     }
 
-    /**
-     * The inner query for a subclause when an array is not requeired
-     *
-     * @see buildSubclauseInnerQuery
-     * @param array $subclause
-     * @param Builder $query
-     * @return Builder the query builder object
-     */
-    private function buildRequireNotArrayQuery($subclause, Builder $query)
+    private function buildRequireNotArrayQuery($subclause, $query)
     {
         return $query->where($subclause['to_value_column'], $subclause['operator'], $subclause['value']);
     }
 
-    /**
-     * The inner query for a subclause when the operator is NULL.
-     *
-     * @see buildSubclauseInnerQuery
-     * @param array $subclause
-     * @param Builder $query
-     * @return Builder the query builder object
-     */
-    private function buildSubclauseWithNull($subclause, Builder $query, $isNotNull = false)
+    private function buildSubclauseWithNull($subclause, $query, $isNotNull = false)
     {
         if ($isNotNull === true) {
             return $query->whereNotNull($subclause['to_value_column']);
